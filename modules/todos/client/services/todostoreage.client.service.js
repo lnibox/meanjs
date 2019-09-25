@@ -2,11 +2,17 @@
     'use strict';
 
     angular.module('todos.services')
-    .factory('todoStorage', function ($http, $injector) {
-        return $injector.get('localStorage');
-    })
-    .factory('localStorage', function ($q) {
+    .factory('TodosStorage', TodosStorage)
+    .factory('LocalStorage', LocalStorage);
 
+    TodosStorage.$inject = ['$http', '$injector'];
+    LocalStorage.$inject = ['$q'];
+
+    function TodosStorage($http, $injector) {
+        return $injector.get('LocalStorage');
+    }
+
+    function LocalStorage($q) {
         var STORAGE_ID = 'todos-angularjs';
 
         var store = {
@@ -51,5 +57,6 @@
         };
 
         return store;
-    });
-});
+    }
+
+})();

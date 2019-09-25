@@ -4,12 +4,12 @@
     angular.module('todos')
     .controller('TodosController', TodosController);
 
-    TodosController.$inject = ['$scope', '$state', 'Authentication', 'Socket', '$routeParams', '$filter', 'store'];
+    TodosController.$inject = ['$scope', '$state', 'Authentication', 'Socket', '$routeParams', '$filter', 'TodosStorage'];
 
-    function TodosController($scope, $state, Authentication, Socket, $routeParams, $filter, store) {
+    function TodosController($scope, $state, Authentication, Socket, $routeParams, $filter, TodosStorage) {
         var vm = this;
 
-        var todos = $scope.todos = store.todos;
+        var todos = $scope.todos = TodosStorage.todos;
 
         $scope.newTodo = '';
         $scope.editedTodo = null;
@@ -39,7 +39,7 @@
                 return;
             }
 
-            store.insert(newTodo);
+            TodosStorage.insert(newTodo);
             $scope.newTodo = '';
         };
 
@@ -72,7 +72,7 @@
                 return;
             }
 
-            store[todo.title ? 'put' : 'delete'](todo);
+            TodosStorage[todo.title ? 'put' : 'delete'](todo);
             $scope.editedTodo = null;
         };
 
@@ -84,22 +84,22 @@
         };
 
         $scope.removeTodo = function (todo) {
-            store.delete(todo);
+            TodosStorage.delete(todo);
         };
 
         $scope.saveTodo = function (todo) {
-            store.put(todo);
+            TodosStorage.put(todo);
         };
 
         $scope.toggleCompleted = function (todo, completed) {
             if (angular.isDefined(completed)) {
                 todo.completed = completed;
             }
-            store.put(todo, todos.indexOf(todo));
+            TodosStorage.put(todo, todos.indexOf(todo));
         };
 
         $scope.clearCompletedTodos = function () {
-            store.clearCompleted();
+            TodosStorage.clearCompleted();
         };
 
         $scope.markAll = function (completed) {
