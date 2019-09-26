@@ -18,7 +18,7 @@ exports.create = function (req, res) {
       res.json(todo);
     }
   });
-}
+};
 
 exports.list = function (req, res) {
   Todo.find(function (err, todos) {
@@ -28,11 +28,11 @@ exports.list = function (req, res) {
       });
     }
     res.json(todos);
-  })
-}
+  });
+};
 
 exports.delete = function (req, res) {
   Todo.findByIdAndRemove(req.params.todoId, function (err, post) {
-    res.json({success: true, message: 'Deleted'});
+    res.json({ success: true, message: 'Deleted' });
   });
-}
+};
