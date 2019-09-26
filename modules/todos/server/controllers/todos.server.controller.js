@@ -36,3 +36,21 @@ exports.delete = function (req, res) {
     res.json({ success: true, message: 'Deleted' });
   });
 };
+
+exports.update = function(req, res) {
+  var todo = new Todo({
+    _id: req.params.todoId,
+    title: req.body.title,
+    completed: req.body.completed
+  });
+
+  Todo.findByIdAndUpdate(req.params.todoId, todo, function(err) {
+    if (err) {
+      return res.status(422).send({
+        message: errorHandler.getErrorMessage(err)
+      });
+    }
+    res.json({ success: true, message: 'Updated' });
+  })
+};
+

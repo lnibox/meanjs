@@ -30,7 +30,17 @@
 
         function deleteTask(todoId) {
             var deferred = $q.defer();
-            $http.delete(TodoResources.todosPath + todoId, { params: { todoId: todoId } }).then(function (todos) {
+            $http.delete(TodoResources.todosPath + todoId).then(function (todos) {
+                deferred.resolve(todos);
+            }), function (err) {
+                deferred.reject(err);
+            };
+            return deferred.promise;
+        }
+
+        function updateTask(todo) {
+            var deferred = $q.defer();
+            $http.put(TodoResources.todosPath + todo['_id'], todo).then(function (todos) {
                 deferred.resolve(todos);
             }), function (err) {
                 deferred.reject(err);
@@ -41,7 +51,8 @@
         return {
             getAll: getAll,
             putTask: putTask,
-            deleteTask: deleteTask
+            deleteTask: deleteTask,
+            updateTask: updateTask
         };
 
     }

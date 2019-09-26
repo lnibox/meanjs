@@ -8,5 +8,6 @@ module.exports = function (app) {
     .post(todo.create);
 
     app.route('/api/todos/:todoId').all()
-    .delete(todo.delete);
+    .delete(todo.delete)
+    .put(todo.update);
   };

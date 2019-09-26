@@ -9,18 +9,18 @@
     function TodosController($scope, $state, Authentication, Socket, $routeParams, $filter, $timeout, Todos) {
         var vm = this;
 
-        vm.todos = {all: []};
+        vm.todos = { all: [] };
 
-        var init = function() {
+        var init = function () {
             var tmp = {};
             let promise = Todos.getAll();
-            promise.then(function(data) {
+            promise.then(function (data) {
                 tmp = data;
-            }, function(err) {
+            }, function (err) {
                 console.error(err);
-            }).finally(function() {
-                $timeout(function() {
-                    $scope.$apply(function() {
+            }).finally(function () {
+                $timeout(function () {
+                    $scope.$apply(function () {
                         vm.todos.all = tmp;
                     });
                 });
@@ -32,11 +32,11 @@
         $scope.newTodo = '';
         $scope.editedTodo = null;
 
-		$scope.$watch('todos', function () {
-			$scope.remainingCount = $filter('filter')(vm.todos.all, { completed: false }).length;
-			$scope.completedCount = vm.todos.all.length - $scope.remainingCount;
-			$scope.allChecked = !$scope.remainingCount;
-		}, true);
+        $scope.$watch('vm.todos', function () {
+            $scope.remainingCount = $filter('filter')(vm.todos.all, { completed: false }).length;
+            $scope.completedCount = vm.todos.all.length - $scope.remainingCount;
+            $scope.allChecked = !$scope.remainingCount;
+        }, true);
 
         // Monitor the current route for changes and adjust the filter accordingly.
         $scope.$on('$routeChangeSuccess', function () {
@@ -57,7 +57,6 @@
                 return;
             }
 
-            // TodosStorage.insert(newTodo);
             Todos.putTask(newTodo);
             $scope.newTodo = '';
             init();
@@ -112,11 +111,8 @@
             TodosStorage.put(todo);
         };
 
-        $scope.toggleCompleted = function (todo, completed) {
-            if (angular.isDefined(completed)) {
-                todo.completed = completed;
-            }
-            TodosStorage.put(todo, todos.indexOf(todo));
+        $scope.toggleCompleted = function (todo) {
+            Todos.updateTask(todo);
         };
 
         $scope.clearCompletedTodos = function () {
