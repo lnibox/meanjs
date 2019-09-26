@@ -1,62 +1,49 @@
-(function() {
+(function () {
     'use strict';
 
     angular.module('todos.services')
-    .factory('TodosStorage', TodosStorage)
-    .factory('LocalStorage', LocalStorage);
+        .factory('Todos', Todos);
 
-    TodosStorage.$inject = ['$http', '$injector'];
-    LocalStorage.$inject = ['$q'];
+    Todos.$inject = ['$http', '$q', 'TodoResources'];
 
-    function TodosStorage($http, $injector) {
-        return $injector.get('LocalStorage');
-    }
+    function Todos($http, $q, TodoResources) {
 
-    function LocalStorage($q) {
-        var STORAGE_ID = 'todos-angularjs';
+        function getAll() {
+            var deferred = $q.defer();
+            $http.get(TodoResources.todosPath, TodoResources.todosParamNoCache).then(function (todos) {
+                deferred.resolve(todos.data);
+            }), function (err) {
+                deferred.reject(err);
+            };
+            return deferred.promise;
+        }
 
-        var store = {
-            todos: [],
+        function putTask(task) {
+            var deferred = $q.defer();
+            $http.post(TodoResources.todosPath, task, TodoResources.todosParamNoCache).then(function (todos) {
+                deferred.resolve(todos);
+            }), function (err) {
+                deferred.reject(err);
+            };
+            return deferred.promise;
+        }
 
-            _getFromLocalStorage: function () {
-                return todos;
-            },
+        function deleteTask(todoId) {
+            var deferred = $q.defer();
+            $http.delete(TodoResources.todosPath + todoId, { params: { todoId: todoId } }).then(function (todos) {
+                deferred.resolve(todos);
+            }), function (err) {
+                deferred.reject(err);
+            };
+            return deferred.promise;
+        }
 
-            _saveToLocalStorage: function (newTodos) {
-                this.todos = newTodos;
-            },
-
-            clearCompleted: function () {
-                var completeTodos = [];
-                var incompleteTodos = [];
-                store.todos.forEach(function (todo) {
-                    if (todo.completed) {
-                        completeTodos.push(todo);
-                    } else {
-                        incompleteTodos.push(todo);
-                    }
-                });
-
-                angular.copy(incompleteTodos, store.todos);
-            },
-
-            delete: function (todo) {
-                store.todos.splice(store.todos.indexOf(todo), 1);
-            },
-
-            get: function () {
-            },
-
-            insert: function (todo) {
-                store.todos.push(todo);
-            },
-
-            put: function (todo, index) {
-                store.todos[index] = todo;
-            }
+        return {
+            getAll: getAll,
+            putTask: putTask,
+            deleteTask: deleteTask
         };
 
-        return store;
     }
 
 })();

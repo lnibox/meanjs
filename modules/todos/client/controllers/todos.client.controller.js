@@ -1,24 +1,42 @@
-(function() {
+(function () {
     'use strict';
 
     angular.module('todos')
-    .controller('TodosController', TodosController);
+        .controller('TodosController', TodosController);
 
-    TodosController.$inject = ['$scope', '$state', 'Authentication', 'Socket', '$routeParams', '$filter', 'TodosStorage'];
+    TodosController.$inject = ['$scope', '$state', 'Authentication', 'Socket', '$routeParams', '$filter', '$timeout', 'Todos'];
 
-    function TodosController($scope, $state, Authentication, Socket, $routeParams, $filter, TodosStorage) {
+    function TodosController($scope, $state, Authentication, Socket, $routeParams, $filter, $timeout, Todos) {
         var vm = this;
 
-        var todos = $scope.todos = TodosStorage.todos;
+        vm.todos = {all: []};
+
+        var init = function() {
+            var tmp = {};
+            let promise = Todos.getAll();
+            promise.then(function(data) {
+                tmp = data;
+            }, function(err) {
+                console.error(err);
+            }).finally(function() {
+                $timeout(function() {
+                    $scope.$apply(function() {
+                        vm.todos.all = tmp;
+                    });
+                });
+            });
+        };
+        init();
+
 
         $scope.newTodo = '';
         $scope.editedTodo = null;
 
-        $scope.$watch('todos', function () {
-            $scope.remainingCount = $filter('filter')(todos, { completed: false }).length;
-            $scope.completedCount = todos.length - $scope.remainingCount;
-            $scope.allChecked = !$scope.remainingCount;
-        }, true);
+		$scope.$watch('todos', function () {
+			$scope.remainingCount = $filter('filter')(vm.todos.all, { completed: false }).length;
+			$scope.completedCount = vm.todos.all.length - $scope.remainingCount;
+			$scope.allChecked = !$scope.remainingCount;
+		}, true);
 
         // Monitor the current route for changes and adjust the filter accordingly.
         $scope.$on('$routeChangeSuccess', function () {
@@ -26,7 +44,7 @@
 
             $scope.statusFilter = (status === 'active') ?
                 { completed: false } : (status === 'completed') ?
-                { completed: true } : {};
+                    { completed: true } : {};
         });
 
         $scope.addTodo = function () {
@@ -39,8 +57,10 @@
                 return;
             }
 
-            TodosStorage.insert(newTodo);
+            // TodosStorage.insert(newTodo);
+            Todos.putTask(newTodo);
             $scope.newTodo = '';
+            init();
         };
 
         $scope.editTodo = function (todo) {
@@ -77,14 +97,15 @@
         };
 
         $scope.revertEdits = function (todo) {
-            todos[todos.indexOf(todo)] = $scope.originalTodo;
+            vm.todos.all[vm.todos.all.indexOf(todo)] = $scope.originalTodo;
             $scope.editedTodo = null;
             $scope.originalTodo = null;
             $scope.reverted = true;
         };
 
         $scope.removeTodo = function (todo) {
-            TodosStorage.delete(todo);
+            Todos.deleteTask(todo['_id']);
+            init();
         };
 
         $scope.saveTodo = function (todo) {
@@ -103,7 +124,7 @@
         };
 
         $scope.markAll = function (completed) {
-            todos.forEach(function (todo) {
+            vm.todos.all.forEach(function (todo) {
                 if (todo.completed !== completed) {
                     $scope.toggleCompleted(todo, completed);
                 }

@@ -1,8 +1,8 @@
-(function() {
+(function () {
     'use strict';
 
     angular.module('todos.routes')
-    .config(routeConfig);
+        .config(routeConfig);
 
     routeConfig.$inject = ['$stateProvider'];
 
