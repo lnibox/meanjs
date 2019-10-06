@@ -1,0 +1,42 @@
+$s48px: 48px;
+$s500px: 500px;
+$s400px: 400px;
+$s25px: 25px;
+
+.container {
+    height: 100vh;
+}
+
+.su-container {
+    border: 1px solid white;
+    border-radius: $s25px;
+    width: $s500px;
+    overflow: hidden;
+}
+
+md-content {
+    [name="signup"] {
+        width: $s400px;
+    }
+    .su-cus {
+        border-radius: 50px;
+        height: 32px;
+        width: 46px
+    }
+    .submit-row {
+        margin-top: 20px;
+    }
+    box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.26);
+}
+
+form div.layout-row {
+    height: $s48px;
+    span {
+        font-size: 18px;
+        height: 24px;
+    }
+}
+
+form span {
+    font-size: 18px;
+}

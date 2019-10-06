@@ -66,6 +66,7 @@
             $scope.editedTodo = todo;
             // Clone the original todo to restore it on demand.
             $scope.originalTodo = angular.extend({}, todo);
+            // Todos.updateTask(todo);
         };
 
         $scope.saveEdits = function (todo, event) {
@@ -91,7 +92,7 @@
                 return;
             }
 
-            TodosStorage[todo.title ? 'put' : 'delete'](todo);
+            Todos.updateTask(todo);
             $scope.editedTodo = null;
         };
 
